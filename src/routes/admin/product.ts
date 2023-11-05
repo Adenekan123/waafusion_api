@@ -38,34 +38,34 @@ router.get("/all", Productroller.fetchProducts);
 
 //skill routes
 router.post(
-  "/skill/create",
+  "/skill",
   createSkillValidator,
   ProductSkillsController.create
 );
 router.delete(
-  "/skill/delete",
+  "/skill",
   deleteSkillValidator,
   ProductSkillsController.deleteSkill
 );
 router.patch(
-  "/skill/update",
+  "/skill",
   updateSkillValidator,
   ProductSkillsController.updateSkill
 );
 
 //category routes
 router.post(
-  "/category/create",
+  "/category",
   createCategoryValidator,
   ProductCategoryController.create
 );
 router.delete(
-  "/category/delete",
+  "/category",
   deleteCategoryValidator,
   ProductCategoryController.deleteCategory
 );
 router.patch(
-  "/category/update",
+  "/category",
   updateCategoryValidator,
   ProductCategoryController.updateCategory
 );

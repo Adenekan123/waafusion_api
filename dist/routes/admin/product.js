@@ -18,10 +18,10 @@ exports.router.delete("/delete", productValidator_1.deleteProductValidator, prod
 exports.router.patch("/update", multer_upload_1.upload.array("image"), productValidator_1.updateProductValidator, productController_1.Productroller.updateProduct);
 exports.router.get("/all", productController_1.Productroller.fetchProducts);
 //skill routes
-exports.router.post("/skill/create", productSkillValidator_1.createSkillValidator, producSkillsController_1.ProductSkillsController.create);
-exports.router.delete("/skill/delete", productSkillValidator_1.deleteSkillValidator, producSkillsController_1.ProductSkillsController.deleteSkill);
-exports.router.patch("/skill/update", productSkillValidator_1.updateSkillValidator, producSkillsController_1.ProductSkillsController.updateSkill);
+exports.router.post("/skill", productSkillValidator_1.createSkillValidator, producSkillsController_1.ProductSkillsController.create);
+exports.router.delete("/skill", productSkillValidator_1.deleteSkillValidator, producSkillsController_1.ProductSkillsController.deleteSkill);
+exports.router.patch("/skill", productSkillValidator_1.updateSkillValidator, producSkillsController_1.ProductSkillsController.updateSkill);
 //category routes
-exports.router.post("/category/create", productCategoryValidator_1.createCategoryValidator, productCategoryController_1.ProductCategoryController.create);
-exports.router.delete("/category/delete", productCategoryValidator_1.deleteCategoryValidator, productCategoryController_1.ProductCategoryController.deleteCategory);
-exports.router.patch("/category/update", productCategoryValidator_1.updateCategoryValidator, productCategoryController_1.ProductCategoryController.updateCategory);
+exports.router.post("/category", productCategoryValidator_1.createCategoryValidator, productCategoryController_1.ProductCategoryController.create);
+exports.router.delete("/category", productCategoryValidator_1.deleteCategoryValidator, productCategoryController_1.ProductCategoryController.deleteCategory);
+exports.router.patch("/category", productCategoryValidator_1.updateCategoryValidator, productCategoryController_1.ProductCategoryController.updateCategory);

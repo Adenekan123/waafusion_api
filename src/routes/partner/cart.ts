@@ -4,6 +4,6 @@ import { createCartValidator, deletCartValidator } from "../../validators/cartVa
 
 export const router = express.Router();
 
-router.post('/create',createCartValidator,CartController.createCart);
-router.delete('/delete',deletCartValidator,CartController.deleteCart);
+router.post('/',createCartValidator,CartController.createCart);
+router.delete('/',deletCartValidator,CartController.deleteCart);
 

@@ -8,5 +8,5 @@ const express_1 = __importDefault(require("express"));
 const cartController_1 = require("../../controllers/cartController");
 const cartValidator_1 = require("../../validators/cartValidator");
 exports.router = express_1.default.Router();
-exports.router.post('/create', cartValidator_1.createCartValidator, cartController_1.CartController.createCart);
-exports.router.delete('/delete', cartValidator_1.deletCartValidator, cartController_1.CartController.deleteCart);
+exports.router.post('/', cartValidator_1.createCartValidator, cartController_1.CartController.createCart);
+exports.router.delete('/', cartValidator_1.deletCartValidator, cartController_1.CartController.deleteCart);
