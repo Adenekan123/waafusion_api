@@ -19,17 +19,22 @@ const storage = multer.diskStorage({
 });
 
 export const deleteImage = async (image_path: string) => {
-  const uploadPath = path.join(__dirname, "../", image_path);
+  const uploadPaths = image_path
+    .split("+")
+    .map((filename) => path.join(__dirname, "../", filename));
 
   try {
-    //check if file exist
-    await fs.promises.access(uploadPath, fs.constants.F_OK);
+    for (let i = 0; i < uploadPaths.length; i++) {
+      //check if file exist
+      await fs.promises.access(uploadPaths[i], fs.constants.F_OK);
 
-    //remove file
-    fs.promises.unlink(uploadPath);
+      //remove file
+      fs.promises.unlink(uploadPaths[i]);
+    }
+
     return true;
   } catch (err) {
-    console.log(err)
+    console.log(err);
     return false;
   }
 };

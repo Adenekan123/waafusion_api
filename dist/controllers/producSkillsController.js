@@ -9,10 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProductCategoryController = void 0;
+exports.ProductSkillsController = void 0;
 const express_validator_1 = require("express-validator");
 const productCategory_1 = require("../models/productCategory");
-class ProductCategoryController {
+const skills_1 = require("../models/skills");
+class ProductSkillsController {
     static create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const errors = (0, express_validator_1.validationResult)(req);
@@ -23,11 +24,11 @@ class ProductCategoryController {
                 return res.status(401).json({ error: "Unauthorized" });
             const { name } = req.body;
             try {
-                const existingCategory = yield productCategory_1.ProductCategory.getCategoryByName(name);
-                if (existingCategory)
-                    return res.status(400).json({ error: "Category already exists" });
-                const category = yield productCategory_1.ProductCategory.create({ name });
-                res.status(201).json({ message: "Category added succesfully", category });
+                const existingSkill = yield skills_1.ProductSkills.getCSkillByName(name);
+                if (existingSkill)
+                    return res.status(400).json({ error: "Skills already exists" });
+                const category = yield skills_1.ProductSkills.create({ name });
+                res.status(201).json({ message: "Skills added succesfully", category });
             }
             catch (err) {
                 console.log(err);
@@ -35,7 +36,7 @@ class ProductCategoryController {
             }
         });
     }
-    static deleteCategory(req, res) {
+    static deleteSkill(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const errors = (0, express_validator_1.validationResult)(req);
             if (!errors.isEmpty()) {
@@ -44,16 +45,16 @@ class ProductCategoryController {
             if (!req.user || req.user.role !== "admin")
                 return res.status(401).json({ error: "Unauthorized" });
             try {
-                const { categoryid } = req.query;
-                const categoryidExist = yield productCategory_1.ProductCategory.getCategoryById(categoryid);
-                if (!categoryidExist)
-                    return res.status(400).json({ error: "category cant be identified" });
-                const category = yield productCategory_1.ProductCategory.destroy({
-                    where: { id: categoryidExist.id },
+                const { skillid } = req.query;
+                const skillidExist = yield skills_1.ProductSkills.getCSkillById(skillid);
+                if (!skillidExist)
+                    return res.status(400).json({ error: "Skill cant be identified" });
+                const skill = yield skills_1.ProductSkills.destroy({
+                    where: { id: skillidExist.id },
                 });
                 res
                     .status(201)
-                    .json({ message: "Product deleted successfully", count: category });
+                    .json({ message: "Skill deleted successfully", count: skill });
             }
             catch (err) {
                 console.log(err);
@@ -61,23 +62,23 @@ class ProductCategoryController {
             }
         });
     }
-    static updateCategory(req, res) {
+    static updateSkill(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const errors = (0, express_validator_1.validationResult)(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
             try {
-                const { categoryid } = req.query;
+                const { skillid } = req.query;
                 const { name } = req.body;
-                const categoryExist = yield productCategory_1.ProductCategory.getCategoryById(categoryid);
-                if (!categoryExist)
-                    return res.status(404).json({ error: "Cetgory can't be identified" });
-                categoryExist["name"] = name;
-                const category = yield categoryExist.save();
+                const skillExist = yield productCategory_1.ProductCategory.getCategoryById(skillid);
+                if (!skillExist)
+                    return res.status(404).json({ error: "Skill can't be identified" });
+                skillExist["name"] = name;
+                const skill = yield skillExist.save();
                 res
                     .status(201)
-                    .json({ message: "Category updated successfully", category });
+                    .json({ message: "Skill updated successfully", skill });
             }
             catch (err) {
                 console.log(err);
@@ -85,11 +86,11 @@ class ProductCategoryController {
             }
         });
     }
-    static fetchCategories(req, res) {
+    static fetchSkills(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const categories = yield productCategory_1.ProductCategory.findAll();
-                res.status(201).json(categories);
+                const skills = yield skills_1.ProductSkills.findAll();
+                res.status(201).json(skills);
             }
             catch (err) {
                 console.log(err);
@@ -98,4 +99,4 @@ class ProductCategoryController {
         });
     }
 }
-exports.ProductCategoryController = ProductCategoryController;
+exports.ProductSkillsController = ProductSkillsController;

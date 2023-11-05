@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import { validationResult } from "express-validator";
+import { QueryTypes } from "sequelize";
 
 import { Product } from "../models/product";
 import { deleteImage } from "../utils/multer_upload";
 import { AuthRequest } from "../types";
 import { User } from "../models/user";
+
+const checkNextQuery = (queries:string[]) =>  queries.some((query)=> query ) ? 'AND':"" ;
 
 export class Productroller {
   static async createProduct(req: AuthRequest, res: Response) {
@@ -13,23 +16,29 @@ export class Productroller {
       return res.status(400).json({ errors: errors.array() });
     }
     if (!req.user || ((req.user as User).role as string) !== "admin")
-    return res.status(401).json({ error: "Unauthorized" });
-    if (!req.file)
+      return res.status(401).json({ error: "Unauthorized" });
+    if (!req.files)
       return res.status(400).json({ error: "Image upload failed" });
 
-    const { name, age_range, price, tag, ratings,category } = req.body;
+    const { name, age_range, price, tag, ratings, category, skill } = req.body;
 
     try {
       // Save the image file path in the imagePath field
-      const image = "uploads/" + req.file.filename;
+      // const image = "uploads/" + req.file.filename;
+      const images =
+        req.files && Array.isArray(req.files)
+          ? req.files.map((file) => "uploads/" + file.filename)
+          : [];
+
       const product = await Product.create({
-        image,
+        image: images.join("+"),
         name,
         age_range,
         price,
         tag,
         ratings,
-        categoryid:category
+        categoryid: category,
+        skillid: skill,
       });
       res
         .status(201)
@@ -45,12 +54,10 @@ export class Productroller {
       return res.status(400).json({ errors: errors.array() });
     }
     if (!req.user || ((req.user as User).role as string) !== "admin")
-    return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: "Unauthorized" });
     try {
       const { productid } = req.query;
-      const productExist = await Product.getProductById(
-        productid as string
-      );
+      const productExist = await Product.getProductById(productid as string);
       if (!productExist)
         return res.status(404).json({ error: "Product can't be identified" });
 
@@ -77,23 +84,24 @@ export class Productroller {
     }
 
     if (!req.user || ((req.user as User).role as string) !== "admin")
-    return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: "Unauthorized" });
     try {
       const { productid } = req.query;
-      const fieldsToupdate = Object.keys(req.body) as (keyof Product)[];
-      const productExist = await Product.getProductById(
-        productid as string
-      );
+      const fieldsToupdate = Object.keys(req.body);
+      const productExist = await Product.getProductById(productid as string);
       if (!productExist)
         return res.status(404).json({ error: "Product can't be identified" });
 
-      if (req.file) {
-        const image = "uploads/" + req.file.filename;
+      if (req.files) {
+        const images =
+          req.files && Array.isArray(req.files)
+            ? req.files.map((file) => "uploads/" + file.filename)
+            : [];
         await deleteImage(productExist.image);
-        productExist["image"] = image;
+        productExist["image"] = images.join("+");
       }
 
-      if (fieldsToupdate.length) {
+      if (fieldsToupdate.length && productExist) {
         fieldsToupdate.every(
           (field) => ((productExist as any)[field] = req.body[field])
         );
@@ -103,6 +111,36 @@ export class Productroller {
       res
         .status(201)
         .json({ message: "Product updated successfully", product });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
+  static async filterProducts(req: Request, res: Response) {
+    const { categories, skills, ages } = req.body;
+    const categoriesQuery = categories
+      ? `categoryid in(${categories.join(",")}) ${checkNextQuery([skills,categories])}`
+      : "";
+    const skillsQuery = skills ? `skillid in(${skills.join(",")}) ${checkNextQuery([skills,categories])}` : "";
+    const agesQuery = ages
+      ? ` (${ages
+          .map(
+            (age: string, index: number) =>
+              `age_range like '${age}%' ${
+                ages.length === index + 1 ? "" : "OR"
+              }`
+          )
+          .join(" ")})`
+      : "";
+    try {
+      const products = await Product.sequelize?.query(
+        `SELECT * FROM products ${
+          !categories && !skills && !ages ? "" : "where"
+        } ${categoriesQuery} ${skillsQuery} ${agesQuery}`,
+        { type: QueryTypes.SELECT }
+      );
+
+      res.status(201).json(products);
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: "Server Error" });

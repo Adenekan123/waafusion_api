@@ -12,24 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ProductCategory = void 0;
+exports.ProductSkills = void 0;
 const sequelize_1 = require("sequelize");
 const mysql_conn_1 = __importDefault(require("../utils/mysql_conn"));
 // import { Product } from "./product";
-class ProductCategory extends sequelize_1.Model {
-    static getCategoryByName(name) {
+class ProductSkills extends sequelize_1.Model {
+    static getCSkillByName(name) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.findOne({ where: { name: name } });
         });
     }
-    static getCategoryById(id) {
+    static getCSkillById(id) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.findOne({ where: { id: id } });
         });
     }
 }
-exports.ProductCategory = ProductCategory;
-ProductCategory.init({
+exports.ProductSkills = ProductSkills;
+ProductSkills.init({
     id: {
         type: sequelize_1.DataTypes.INTEGER,
         primaryKey: true,
@@ -39,13 +39,13 @@ ProductCategory.init({
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
-}, { sequelize: mysql_conn_1.default, tableName: "productcategories" });
+}, { sequelize: mysql_conn_1.default, tableName: "productskills" });
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mysql_conn_1.default.sync();
-        console.log("product category table synced");
+        console.log("product skills table synced");
     }
     catch (error) {
-        console.error("Error syncing product category table:", error);
+        console.error("Error syncing product skills table:", error);
     }
 }))();

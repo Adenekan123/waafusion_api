@@ -7,6 +7,7 @@ import {
 } from "sequelize";
 import connection from "../utils/mysql_conn";
 import { ProductCategory } from "./productCategory";
+import { ProductSkills } from "./skills";
 
 export class Product extends Model<
   InferAttributes<Product>,
@@ -14,6 +15,7 @@ export class Product extends Model<
 > {
   declare id: CreationOptional<number>;
   declare categoryid: number;
+  declare skillid: number;
   declare name: string;
   declare tag: string;
   declare age_range: string;
@@ -38,6 +40,14 @@ Product.init(
       allowNull: false,
       references: {
         model: ProductCategory,
+        key: "id",
+      },
+    },
+    skillid: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: ProductSkills,
         key: "id",
       },
     },
@@ -67,10 +77,10 @@ Product.init(
     },
   },
   { sequelize: connection, tableName: "products" }
-
 );
 
-  Product.belongsTo(ProductCategory,{foreignKey:'categoryid'});
+Product.belongsTo(ProductCategory, { foreignKey: "categoryid" });
+Product.belongsTo(ProductSkills, { foreignKey: "skillid" });
 
 // Product.hasMany(Cart);
 

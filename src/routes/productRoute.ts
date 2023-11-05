@@ -5,8 +5,9 @@ import {createProductValidator,deleteProductValidator,updateProductValidator} fr
 
 export const router = express.Router();
 
-router.post('/create',upload.single('image'),createProductValidator,Productroller.createProduct);
+router.post('/create',upload.array('image'),createProductValidator,Productroller.createProduct);
 router.delete('/delete',deleteProductValidator,Productroller.deleteProduct);
-router.patch('/update',upload.single('image'),updateProductValidator,Productroller.updateProduct);
+router.patch('/update',upload.array('image'),updateProductValidator,Productroller.updateProduct);
 router.get('/all',Productroller.fetchProducts);
+router.post('/filter',Productroller.filterProducts);
 

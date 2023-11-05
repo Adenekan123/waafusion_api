@@ -16,6 +16,7 @@ exports.Product = void 0;
 const sequelize_1 = require("sequelize");
 const mysql_conn_1 = __importDefault(require("../utils/mysql_conn"));
 const productCategory_1 = require("./productCategory");
+const skills_1 = require("./skills");
 class Product extends sequelize_1.Model {
     static getProductById(productid) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -35,6 +36,14 @@ Product.init({
         allowNull: false,
         references: {
             model: productCategory_1.ProductCategory,
+            key: "id",
+        },
+    },
+    skillid: {
+        type: sequelize_1.DataTypes.INTEGER,
+        allowNull: false,
+        references: {
+            model: skills_1.ProductSkills,
             key: "id",
         },
     },
@@ -63,7 +72,8 @@ Product.init({
         allowNull: false,
     },
 }, { sequelize: mysql_conn_1.default, tableName: "products" });
-Product.belongsTo(productCategory_1.ProductCategory, { foreignKey: 'categoryid' });
+Product.belongsTo(productCategory_1.ProductCategory, { foreignKey: "categoryid" });
+Product.belongsTo(skills_1.ProductSkills, { foreignKey: "skillid" });
 // Product.hasMany(Cart);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {

@@ -2,7 +2,8 @@ import { body, check } from "express-validator";
 
 export const createProductValidator = [
   body("name").notEmpty().withMessage("Invalid product name"),
-  body("category").notEmpty().withMessage("Invalid product category"),
+  body("category").notEmpty().withMessage("category field is required"),
+  body("skill").notEmpty().withMessage("skill field is required"),
   body("price").notEmpty().withMessage("Invalid price format"),
   body("ratings").notEmpty().withMessage("Invalid ratings format"),
   body("age_range").notEmpty().withMessage("Invalid age_range"),

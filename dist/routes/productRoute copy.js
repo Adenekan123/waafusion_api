@@ -13,4 +13,3 @@ exports.router.post('/create', multer_upload_1.upload.array('image'), productVal
 exports.router.delete('/delete', productValidator_1.deleteProductValidator, productController_1.Productroller.deleteProduct);
 exports.router.patch('/update', multer_upload_1.upload.array('image'), productValidator_1.updateProductValidator, productController_1.Productroller.updateProduct);
 exports.router.get('/all', productController_1.Productroller.fetchProducts);
-exports.router.post('/filter', productController_1.Productroller.filterProducts);

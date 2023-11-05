@@ -4,7 +4,8 @@ exports.updateProductValidator = exports.deleteProductValidator = exports.create
 const express_validator_1 = require("express-validator");
 exports.createProductValidator = [
     (0, express_validator_1.body)("name").notEmpty().withMessage("Invalid product name"),
-    (0, express_validator_1.body)("category").notEmpty().withMessage("Invalid product category"),
+    (0, express_validator_1.body)("category").notEmpty().withMessage("category field is required"),
+    (0, express_validator_1.body)("skill").notEmpty().withMessage("skill field is required"),
     (0, express_validator_1.body)("price").notEmpty().withMessage("Invalid price format"),
     (0, express_validator_1.body)("ratings").notEmpty().withMessage("Invalid ratings format"),
     (0, express_validator_1.body)("age_range").notEmpty().withMessage("Invalid age_range"),

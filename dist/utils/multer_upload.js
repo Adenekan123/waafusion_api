@@ -28,12 +28,16 @@ const storage = multer_1.default.diskStorage({
     },
 });
 const deleteImage = (image_path) => __awaiter(void 0, void 0, void 0, function* () {
-    const uploadPath = path_1.default.join(__dirname, "../", image_path);
+    const uploadPaths = image_path
+        .split("+")
+        .map((filename) => path_1.default.join(__dirname, "../", filename));
     try {
-        //check if file exist
-        yield fs_1.default.promises.access(uploadPath, fs_1.default.constants.F_OK);
-        //remove file
-        fs_1.default.promises.unlink(uploadPath);
+        for (let i = 0; i < uploadPaths.length; i++) {
+            //check if file exist
+            yield fs_1.default.promises.access(uploadPaths[i], fs_1.default.constants.F_OK);
+            //remove file
+            fs_1.default.promises.unlink(uploadPaths[i]);
+        }
         return true;
     }
     catch (err) {

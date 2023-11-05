@@ -8,6 +8,7 @@ require("./utils/mysql_conn");
 const userRoute_1 = require("./routes/userRoute");
 const productRoute_1 = require("./routes/productRoute");
 const productCategoryRoute_1 = require("./routes/productCategoryRoute");
+const skillRoute_1 = require("./routes/skillRoute");
 const cartRoute_1 = require("./routes/cartRoute");
 const authMiddleware_1 = require("./middleware/authMiddleware");
 // import crypto from 'crypto'
@@ -21,6 +22,7 @@ app.use('/', authMiddleware_1.authenticateToken);
 app.use('/product', productRoute_1.router);
 app.use('/product-category', productCategoryRoute_1.router);
 app.use('/cart', cartRoute_1.router);
+app.use('/product-skill', skillRoute_1.router);
 app.listen(port, () => {
     return console.log(`Express is listening at http://localhost:${port}`);
 });
