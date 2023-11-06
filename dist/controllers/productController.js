@@ -14,7 +14,14 @@ const express_validator_1 = require("express-validator");
 const sequelize_1 = require("sequelize");
 const product_1 = require("../models/product");
 const multer_upload_1 = require("../utils/multer_upload");
-const checkNextQuery = (queries) => queries.some((query) => query) ? 'AND' : "";
+const strToObj = (price) => {
+    const arr = price.replace("{", "").replace("}", "").split(",");
+    return arr.reduce((acc, curr) => {
+        const strArr = curr.split(":");
+        acc = Object.assign(Object.assign({}, acc), { [strArr[0]]: strArr[1] });
+        return acc;
+    }, {});
+};
 class Productroller {
     static createProduct(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -37,9 +44,9 @@ class Productroller {
                     image: images.join("+"),
                     name,
                     age_range,
-                    price,
+                    price: typeof price === "string" ? strToObj(price) : price,
                     tag,
-                    ratings,
+                    ratings: typeof ratings === "string" ? strToObj(ratings) : ratings,
                     categoryid: category,
                     skillid: skill,
                 });
@@ -121,20 +128,27 @@ class Productroller {
         });
     }
     static filterProducts(req, res) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const { categories, skills, ages } = req.body;
-            const categoriesQuery = categories
-                ? `categoryid in(${categories.join(",")}) ${checkNextQuery([skills, categories])}`
-                : "";
-            const skillsQuery = skills ? `skillid in(${skills.join(",")}) ${checkNextQuery([skills, categories])}` : "";
-            const agesQuery = ages
-                ? ` (${ages
-                    .map((age, index) => `age_range like '${age}%' ${ages.length === index + 1 ? "" : "OR"}`)
-                    .join(" ")})`
-                : "";
+            const whereConditions = {};
+            if (categories && Array.isArray(categories) && categories.length) {
+                whereConditions.categoryid = { [sequelize_1.Op.in]: categories };
+            }
+            if (skills && Array.isArray(skills) && skills.length) {
+                whereConditions.skillid = { [sequelize_1.Op.in]: skills };
+            }
+            if (ages && Array.isArray(ages) && ages.length) {
+                whereConditions.age_range = {
+                    [sequelize_1.Op.or]: ages.map((age) => ({
+                        [sequelize_1.Op.like]: age + "%",
+                    })),
+                };
+            }
             try {
-                const products = yield ((_a = product_1.Product.sequelize) === null || _a === void 0 ? void 0 : _a.query(`SELECT * FROM products ${!categories && !skills && !ages ? "" : "where"} ${categoriesQuery} ${skillsQuery} ${agesQuery}`, { type: sequelize_1.QueryTypes.SELECT }));
+                const products = yield product_1.Product.findAll({
+                    where: whereConditions,
+                });
+                // const finalProducts = parseFields(products,['price,ratings'])
                 res.status(201).json(products);
             }
             catch (err) {
@@ -148,6 +162,87 @@ class Productroller {
             try {
                 const products = yield product_1.Product.findAll();
                 res.status(201).json(products);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static fetchMostLovedKits(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const products = yield product_1.Product.findAll({
+                    where: { categoryid: 1, "ratings.rating": { [sequelize_1.Op.gt]: 4.0 } },
+                });
+                res.status(201).json(products);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static fetchBeginnersProducts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const products = yield product_1.Product.findAll({
+                    where: {
+                        name: {
+                            [sequelize_1.Op.or]: [
+                                { [sequelize_1.Op.like]: "%starter%" },
+                                { [sequelize_1.Op.like]: "%level_1%" },
+                                { [sequelize_1.Op.like]: "%advanced%" },
+                            ],
+                        },
+                    },
+                });
+                res.status(201).json(products);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static fetchEducationalKits(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const products = yield product_1.Product.findAll({
+                    where: {
+                        categoryid: 1,
+                    },
+                });
+                res.status(201).json(products);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static fetchKitsCourses(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const products = yield product_1.Product.findAll({
+                    where: {
+                        categoryid: 3,
+                    },
+                });
+                res.status(201).json(products);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static fetchProductImage(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const { url } = req.query;
+                res.setHeader('Content-Type', 'image/webp');
+                res.status(201).send("dist/" + url);
             }
             catch (err) {
                 console.log(err);

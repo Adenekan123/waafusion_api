@@ -18,6 +18,7 @@ const mysql_conn_1 = __importDefault(require("../utils/mysql_conn"));
 const productCategory_1 = require("./productCategory");
 const skills_1 = require("./skills");
 class Product extends sequelize_1.Model {
+    //  { rating: number; total_reviews: number };
     static getProductById(productid) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield this.findOne({ where: { id: productid } });
@@ -66,10 +67,20 @@ Product.init({
     price: {
         type: sequelize_1.DataTypes.JSON,
         allowNull: false,
+        get: function () {
+            return typeof this.getDataValue("price") === "string"
+                ? JSON.parse(this.getDataValue("price"))
+                : this.getDataValue("price");
+        },
     },
     ratings: {
         type: sequelize_1.DataTypes.JSON,
         allowNull: false,
+        get: function () {
+            return typeof this.getDataValue("ratings") === "string"
+                ? JSON.parse(this.getDataValue("ratings"))
+                : this.getDataValue("ratings");
+        },
     },
 }, { sequelize: mysql_conn_1.default, tableName: "products" });
 Product.belongsTo(productCategory_1.ProductCategory, { foreignKey: "categoryid" });

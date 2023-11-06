@@ -20,9 +20,10 @@ export class Product extends Model<
   declare tag: string;
   declare age_range: string;
   declare image: string;
-  declare price: { curr: number; prev: number; discount: number };
-  declare ratings: { rating: number; total_reviews: number };
-
+  declare price: string;
+  //  { curr: number; prev: number; discount: number };
+  declare ratings: string;
+  //  { rating: number; total_reviews: number };
   static async getProductById(productid: string) {
     return await this.findOne({ where: { id: productid } });
   }
@@ -70,10 +71,20 @@ Product.init(
     price: {
       type: DataTypes.JSON,
       allowNull: false,
+      get: function () {
+        return typeof this.getDataValue("price") === "string"
+          ? JSON.parse(this.getDataValue("price"))
+          : this.getDataValue("price");
+      },
     },
     ratings: {
       type: DataTypes.JSON,
       allowNull: false,
+      get: function () {
+        return typeof this.getDataValue("ratings") === "string"
+          ? JSON.parse(this.getDataValue("ratings"))
+          : this.getDataValue("ratings");
+      },
     },
   },
   { sequelize: connection, tableName: "products" }

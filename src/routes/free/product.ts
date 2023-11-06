@@ -6,5 +6,9 @@ import { ProductCategoryController } from "../../controllers/productCategoryCont
 export const router = express.Router();
 
 router.post("/filter", Productroller.filterProducts);
+router.get("/mostloved_kits", Productroller.fetchMostLovedKits);
+router.get("/education_kits", Productroller.fetchEducationalKits);
+router.get("/beginners", Productroller.fetchBeginnersProducts);
+router.get("/image", Productroller.fetchProductImage);
 router.get("/skills", ProductSkillsController.fetchSkills);
 router.get("/categories", ProductCategoryController.fetchCategories);
