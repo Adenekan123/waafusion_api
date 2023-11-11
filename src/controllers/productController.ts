@@ -22,12 +22,11 @@ export class Productroller {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    if (!req.user || ((req.user as User).role as string) !== "admin")
-      return res.status(401).json({ error: "Unauthorized" });
+  
     if (!req.files)
       return res.status(400).json({ error: "Image upload failed" });
 
-    const { name, age_range, price, tag, ratings, category, skill } = req.body;
+    const { name, age_range, price, tag, ratings, category, skill,description } = req.body;
     try {
       // Save the image file path in the imagePath field
       // const image = "uploads/" + req.file.filename;
@@ -40,6 +39,7 @@ export class Productroller {
         image: images.join("+"),
         name,
         age_range,
+        description,
         price: typeof price === "string" ? strToObj(price) : price,
         tag,
         ratings: typeof ratings === "string" ? strToObj(ratings) : ratings,
@@ -143,6 +143,7 @@ export class Productroller {
     try {
       const products = await Product.findAll({
         where: whereConditions,
+        limit : Object.keys(whereConditions).length ? 100 : 0
       });
       // const finalProducts = parseFields(products,['price,ratings'])
       res.status(201).json(products);

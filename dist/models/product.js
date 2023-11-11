@@ -52,6 +52,10 @@ Product.init({
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
+    description: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
     tag: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
@@ -85,7 +89,6 @@ Product.init({
 }, { sequelize: mysql_conn_1.default, tableName: "products" });
 Product.belongsTo(productCategory_1.ProductCategory, { foreignKey: "categoryid" });
 Product.belongsTo(skills_1.ProductSkills, { foreignKey: "skillid" });
-// Product.hasMany(Cart);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mysql_conn_1.default.sync();

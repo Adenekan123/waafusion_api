@@ -17,6 +17,7 @@ const express_validator_1 = require("express-validator");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const user_1 = require("../models/user");
+const token_1 = require("../models/token");
 class UserController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -24,19 +25,27 @@ class UserController {
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-            const { email, phone, username, password } = req.body;
+            const { email, phone, username, password, role } = req.body;
             try {
                 const existingUser = yield user_1.User.getUserByEmail(email);
                 if (existingUser)
                     return res.status(400).json({ error: "User already exists" });
                 const salt = yield bcryptjs_1.default.genSalt(10);
                 const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
-                const userId = yield user_1.User.create({
-                    username,
-                    email,
-                    phone,
-                    password: hashedPassword,
-                });
+                const userId = role
+                    ? yield user_1.User.create({
+                        username,
+                        email,
+                        phone,
+                        password: hashedPassword,
+                        role,
+                    })
+                    : yield user_1.User.create({
+                        username,
+                        email,
+                        phone,
+                        password: hashedPassword,
+                    });
                 res.status(201).json({ message: "User registered succesfully", userId });
             }
             catch (err) {
@@ -61,12 +70,36 @@ class UserController {
                 if (!isPasswordValid)
                     return res.status(401).json({ error: "Invalid credentials" });
                 //Generate access token
-                const accesToken = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.SECRET_KEY || "", { expiresIn: "15M" });
-                const refreshToken = jsonwebtoken_1.default.sign({ userId: user.id }, process.env.SECRET_KEY || "", { expiresIn: "7d" });
+                const accesToken = jsonwebtoken_1.default.sign({ id: user.id, role: user.role }, process.env.SECRET_KEY || "", { expiresIn: "15M" });
+                const refreshToken = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET_KEY || "", { expiresIn: "7d" });
                 return res.status(200).json({ accesToken, refreshToken });
             }
             catch (err) {
                 res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static logout(req, res) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Extract the token from the request, assuming it's stored in a cookie or header
+                const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+                if (!token) {
+                    return res.status(401).json({ error: "Unauthorized" });
+                }
+                const tokenBlacklisted = yield token_1.TokenBlacklist.tokenBlacklisted(token);
+                if (tokenBlacklisted)
+                    return res
+                        .status(401)
+                        .json({ error: "Unauthorized, You are logged out" });
+                yield token_1.TokenBlacklist.create({ token });
+                delete req.user;
+                return res.status(401).json({ error: "You are logged out" });
+            }
+            catch (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Server Error" });
             }
         });
     }

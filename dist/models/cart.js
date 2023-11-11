@@ -28,6 +28,22 @@ class Cart extends sequelize_1.Model {
             return yield this.findAll({ where: { userid: id }, include: [product_1.Product] });
         });
     }
+    static getCart(productid, userid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log({ productid, userid });
+            return yield this.findOne({
+                where: { userid, productid },
+                include: [product_1.Product],
+            });
+        });
+    }
+    static getCartByProductId(productid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.findOne({
+                where: { productid: productid },
+            });
+        });
+    }
 }
 exports.Cart = Cart;
 Cart.init({
@@ -41,16 +57,16 @@ Cart.init({
         allowNull: false,
         references: {
             model: user_1.User,
-            key: 'id'
-        }
+            key: "id",
+        },
     },
     productid: {
         type: sequelize_1.DataTypes.INTEGER,
         allowNull: false,
         references: {
             model: product_1.Product,
-            key: 'id'
-        }
+            key: "id",
+        },
     },
     quantity: {
         type: sequelize_1.DataTypes.INTEGER,
@@ -58,8 +74,9 @@ Cart.init({
         defaultValue: 0,
     },
 }, { sequelize: mysql_conn_1.default, tableName: "cart" });
-Cart.belongsTo(product_1.Product, { foreignKey: 'productid' });
-Cart.belongsTo(user_1.User, { foreignKey: 'userid' });
+Cart.belongsTo(product_1.Product, { foreignKey: "productid" });
+Cart.belongsTo(user_1.User, { foreignKey: "userid" });
+user_1.User.hasMany(Cart);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield mysql_conn_1.default.sync();

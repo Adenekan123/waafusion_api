@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProductCategoryController = void 0;
 const express_validator_1 = require("express-validator");
 const productCategory_1 = require("../models/productCategory");
+const product_1 = require("../models/product");
 class ProductCategoryController {
     static create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -90,6 +91,25 @@ class ProductCategoryController {
             try {
                 const categories = yield productCategory_1.ProductCategory.findAll();
                 res.status(201).json(categories);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static fetchProduct(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const errors = (0, express_validator_1.validationResult)(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+            try {
+                const { productid } = req.params;
+                const categorie = yield product_1.Product.findOne({
+                    where: { id: productid },
+                });
+                res.status(201).json(categorie);
             }
             catch (err) {
                 console.log(err);

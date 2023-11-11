@@ -11,29 +11,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CartController = void 0;
 const express_validator_1 = require("express-validator");
-const productCategory_1 = require("../models/productCategory");
 const cart_1 = require("../models/cart");
 class CartController {
-    static create(req, res) {
+    static createCart(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const errors = (0, express_validator_1.validationResult)(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
             const { productid, quantity } = req.body;
+            const { id: userid } = req.user;
             try {
-                const cartExist = yield cart_1.Cart.getCartById(productid);
+                const cartExist = yield cart_1.Cart.getCartByProductId(productid);
                 if (cartExist) {
-                    const cart = cartExist.update({ quantity: quantity });
-                    res.status(201).json({ message: "Item added", cart });
+                    yield cartExist.update({
+                        quantity: quantity ? quantity : cartExist.quantity + 1,
+                    });
+                    const carts = yield cart_1.Cart.getCarts(userid);
+                    res.status(201).json({ message: "Item added", carts });
                 }
                 else {
                     yield cart_1.Cart.create({
+                        quantity: quantity ? quantity : 1,
                         productid,
-                        quantity: quantity ? quantity : 0,
-                        Userid: req.user,
+                        userid,
                     });
-                    const carts = yield cart_1.Cart.getCarts();
+                    const carts = yield cart_1.Cart.getCarts(userid);
                     res.status(201).json({ message: "Item added", carts });
                 }
             }
@@ -43,59 +46,26 @@ class CartController {
             }
         });
     }
-    static deleteCategory(req, res) {
+    static deleteCart(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const errors = (0, express_validator_1.validationResult)(req);
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
             try {
-                const { categoryid } = req.query;
-                const categoryidExist = yield productCategory_1.ProductCategory.getCategoryById(categoryid);
-                if (!categoryidExist)
-                    return res.status(400).json({ error: "category cant be identified" });
-                const category = yield productCategory_1.ProductCategory.destroy({
-                    where: { id: categoryidExist.id },
+                const { cartid } = req.query;
+                const { id: userid } = req.user;
+                const cartExist = yield cart_1.Cart.getCartById(cartid);
+                if (!cartExist)
+                    return res.status(404).json({ error: "cart item can't be identified" });
+                //delete image and delete record in the database
+                yield cart_1.Cart.destroy({
+                    where: { id: cartExist.id },
                 });
+                const carts = yield cart_1.Cart.getCarts(userid);
                 res
                     .status(201)
-                    .json({ message: "Product deleted successfully", count: category });
-            }
-            catch (err) {
-                console.log(err);
-                res.status(500).json({ error: "Server Error" });
-            }
-        });
-    }
-    static updateCategory(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            const errors = (0, express_validator_1.validationResult)(req);
-            if (!errors.isEmpty()) {
-                return res.status(400).json({ errors: errors.array() });
-            }
-            try {
-                const { categoryid } = req.query;
-                const { name } = req.body;
-                const categoryExist = yield productCategory_1.ProductCategory.getCategoryById(categoryid);
-                if (!categoryExist)
-                    return res.status(404).json({ error: "Cetgory can't be identified" });
-                categoryExist["name"] = name;
-                const category = yield categoryExist.save();
-                res
-                    .status(201)
-                    .json({ message: "Category updated successfully", category });
-            }
-            catch (err) {
-                console.log(err);
-                res.status(500).json({ error: "Server Error" });
-            }
-        });
-    }
-    static fetchCategories(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const categories = yield productCategory_1.ProductCategory.findAll();
-                res.status(201).json(categories);
+                    .json({ message: "Cart deleted successfully", carts });
             }
             catch (err) {
                 console.log(err);

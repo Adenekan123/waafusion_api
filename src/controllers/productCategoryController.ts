@@ -3,6 +3,7 @@ import { validationResult } from "express-validator";
 import { ProductCategory } from "../models/productCategory";
 import { AuthRequest } from "../types";
 import { User } from "../models/user";
+import { Product } from "../models/product";
 
 export class ProductCategoryController {
   static async create(req: AuthRequest, res: Response) {
@@ -34,7 +35,7 @@ export class ProductCategoryController {
       return res.status(400).json({ errors: errors.array() });
     }
     if (!req.user || ((req.user as User).role as string) !== "admin")
-    return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({ error: "Unauthorized" });
 
     try {
       const { categoryid } = req.query;
@@ -87,6 +88,22 @@ export class ProductCategoryController {
     try {
       const categories = await ProductCategory.findAll();
       res.status(201).json(categories);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
+  static async fetchProduct(req: Request, res: Response) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    try {
+      const { productid } = req.params;
+      const categorie = await Product.findOne({
+        where: { id: productid as string },
+      });
+      res.status(201).json(categorie);
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: "Server Error" });

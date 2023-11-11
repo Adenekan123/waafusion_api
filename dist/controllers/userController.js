@@ -17,6 +17,7 @@ const express_validator_1 = require("express-validator");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const user_1 = require("../models/user");
+const token_1 = require("../models/token");
 class UserController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -75,6 +76,30 @@ class UserController {
             }
             catch (err) {
                 res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static logout(req, res) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                // Extract the token from the request, assuming it's stored in a cookie or header
+                const token = (_a = req.headers.authorization) === null || _a === void 0 ? void 0 : _a.split(" ")[1];
+                if (!token) {
+                    return res.status(401).json({ error: "Unauthorized" });
+                }
+                const tokenBlacklisted = yield token_1.TokenBlacklist.tokenBlacklisted(token);
+                if (tokenBlacklisted)
+                    return res
+                        .status(401)
+                        .json({ error: "Unauthorized, You are logged out" });
+                yield token_1.TokenBlacklist.create({ token });
+                delete req.user;
+                return res.status(401).json({ error: "You are logged out" });
+            }
+            catch (err) {
+                console.error(err);
+                return res.status(500).json({ error: "Server Error" });
             }
         });
     }

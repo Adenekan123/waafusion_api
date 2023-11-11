@@ -22,7 +22,7 @@ class CartController {
             const { productid, quantity } = req.body;
             const { id: userid } = req.user;
             try {
-                const cartExist = yield cart_1.Cart.getCartById(productid);
+                const cartExist = yield cart_1.Cart.getCartByProductId(productid);
                 if (cartExist) {
                     yield cartExist.update({
                         quantity: quantity ? quantity : cartExist.quantity + 1,

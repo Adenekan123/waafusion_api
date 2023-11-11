@@ -14,7 +14,7 @@ export class CartController {
     const { id: userid } = req.user as User;
 
     try {
-      const cartExist = await Cart.getCartById(productid);
+      const cartExist = await Cart.getCartByProductId(productid);
       if (cartExist) {
         await cartExist.update({
           quantity: quantity ? quantity : cartExist.quantity + 1,

@@ -19,6 +19,7 @@ const storage = multer.diskStorage({
 });
 
 export const deleteImage = async (image_path: string) => {
+  if(!image_path) return false;
   const uploadPaths = image_path
     .split("+")
     .map((filename) => path.join(__dirname, "../", filename));

@@ -21,8 +21,20 @@ export class Cart extends Model<
   static async getCartById(id: string) {
     return await this.findOne({ where: { id: id } });
   }
-  static async getCarts(id:string) {
-    return await this.findAll({where:{userid:id}, include:[Product] });
+  static async getCarts(id: string) {
+    return await this.findAll({ where: { userid: id }, include: [Product] });
+  }
+  static async getCart(productid: string, userid: string) {
+    console.log({productid,userid});
+    return await this.findOne({
+      where: { userid, productid },
+      include: [Product],
+    });
+  }
+  static async getCartByProductId(productid: string) {
+    return await this.findOne({
+      where: { productid: productid },
+    });
   }
 }
 
@@ -35,19 +47,19 @@ Cart.init(
     },
     userid: {
       type: DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:User,
-        key:'id'
-      }
+      allowNull: false,
+      references: {
+        model: User,
+        key: "id",
+      },
     },
     productid: {
       type: DataTypes.INTEGER,
-      allowNull:false,
-      references:{
-        model:Product,
-        key:'id'
-      }
+      allowNull: false,
+      references: {
+        model: Product,
+        key: "id",
+      },
     },
     quantity: {
       type: DataTypes.INTEGER,
@@ -58,8 +70,10 @@ Cart.init(
   { sequelize: connection, tableName: "cart" }
 );
 
-Cart.belongsTo(Product,{foreignKey:'productid'});
-Cart.belongsTo(User,{foreignKey:'userid'});
+Cart.belongsTo(Product, { foreignKey: "productid" });
+
+Cart.belongsTo(User, { foreignKey: "userid" });
+User.hasMany(Cart);
 
 (async () => {
   try {

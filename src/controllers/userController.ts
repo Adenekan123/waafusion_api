@@ -3,6 +3,8 @@ import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { User } from "../models/user";
+import { TokenBlacklist } from "../models/token";
+import { AuthRequest } from "../types";
 
 export class UserController {
   static async register(req: Request, res: Response) {
@@ -60,7 +62,7 @@ export class UserController {
 
       //Generate access token
       const accesToken = jwt.sign(
-        { id: user.id,role:user.role },
+        { id: user.id, role: user.role },
         process.env.SECRET_KEY || "",
         { expiresIn: "15M" }
       );
@@ -74,6 +76,29 @@ export class UserController {
       return res.status(200).json({ accesToken, refreshToken });
     } catch (err) {
       res.status(500).json({ error: "Server Error" });
+    }
+  }
+  static async logout(req: AuthRequest, res: Response) {
+    try {
+      // Extract the token from the request, assuming it's stored in a cookie or header
+      const token = req.headers.authorization?.split(" ")[1];
+
+      if (!token) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const tokenBlacklisted = await TokenBlacklist.tokenBlacklisted(token);
+      if (tokenBlacklisted)
+        return res
+          .status(401)
+          .json({ error: "Unauthorized, You are logged out" });
+
+      await TokenBlacklist.create({ token });
+      delete req.user;
+      return res.status(401).json({ error: "You are logged out" });
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Server Error" });
     }
   }
 }

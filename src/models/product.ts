@@ -21,6 +21,7 @@ export class Product extends Model<
   declare age_range: string;
   declare image: string;
   declare price: string;
+  declare description: string;
   //  { curr: number; prev: number; discount: number };
   declare ratings: string;
   //  { rating: number; total_reviews: number };
@@ -53,6 +54,10 @@ Product.init(
       },
     },
     name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    description: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -93,7 +98,6 @@ Product.init(
 Product.belongsTo(ProductCategory, { foreignKey: "categoryid" });
 Product.belongsTo(ProductSkills, { foreignKey: "skillid" });
 
-// Product.hasMany(Cart);
 
 (async () => {
   try {
