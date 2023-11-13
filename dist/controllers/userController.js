@@ -25,7 +25,7 @@ class UserController {
             if (!errors.isEmpty()) {
                 return res.status(400).json({ errors: errors.array() });
             }
-            const { email, phone, username, password, role } = req.body;
+            const { firstname, lastname, state, email, phone, address, password, role, } = req.body;
             try {
                 const existingUser = yield user_1.User.getUserByEmail(email);
                 if (existingUser)
@@ -34,16 +34,22 @@ class UserController {
                 const hashedPassword = yield bcryptjs_1.default.hash(password, salt);
                 const userId = role
                     ? yield user_1.User.create({
-                        username,
+                        firstname,
+                        lastname,
+                        state,
                         email,
                         phone,
+                        address,
                         password: hashedPassword,
                         role,
                     })
                     : yield user_1.User.create({
-                        username,
+                        firstname,
+                        lastname,
+                        state,
                         email,
                         phone,
+                        address,
                         password: hashedPassword,
                     });
                 res.status(201).json({ message: "User registered succesfully", userId });

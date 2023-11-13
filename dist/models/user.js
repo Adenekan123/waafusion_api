@@ -29,10 +29,17 @@ User.init({
         primaryKey: true,
         autoIncrement: true,
     },
-    username: {
+    firstname: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
-        unique: true,
+    },
+    lastname: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
+    },
+    state: {
+        type: sequelize_1.DataTypes.STRING,
+        allowNull: false,
     },
     email: {
         type: sequelize_1.DataTypes.STRING,
@@ -44,14 +51,18 @@ User.init({
         allowNull: false,
         unique: true,
     },
+    address: {
+        type: sequelize_1.DataTypes.STRING(16),
+        allowNull: false,
+    },
     password: {
         type: sequelize_1.DataTypes.STRING,
         allowNull: false,
     },
     role: {
         type: sequelize_1.DataTypes.STRING,
-        defaultValue: 'partner'
-    }
+        defaultValue: "partner",
+    },
 }, { sequelize: mysql_conn_1.default, tableName: "users" });
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {
