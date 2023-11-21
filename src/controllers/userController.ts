@@ -79,7 +79,7 @@ export class UserController {
       const accesToken = jwt.sign(
         { id: user.id, role: user.role },
         process.env.SECRET_KEY || "",
-        { expiresIn: "15M" }
+        { expiresIn: "2days" }
       );
 
       const refreshToken = jwt.sign(

@@ -22,13 +22,20 @@ export class Cart extends Model<
     return await this.findOne({ where: { id: id } });
   }
   static async getCarts(id: string) {
-    return await this.findAll({ where: { userid: id }, include: [Product] });
+    return await this.findAll({
+      where: { userid: id },
+      include: [{ model: Product, as: "product" }],
+    });
   }
   static async getCart(productid: string, userid: string) {
-    console.log({productid,userid});
     return await this.findOne({
       where: { userid, productid },
       include: [Product],
+    });
+  }
+  static async emptyCart(userid: string) {
+    return await this.destroy({
+      where: { userid },
     });
   }
   static async getCartByProductId(productid: string) {
@@ -70,7 +77,7 @@ Cart.init(
   { sequelize: connection, tableName: "cart" }
 );
 
-Cart.belongsTo(Product, { foreignKey: "productid" });
+Cart.belongsTo(Product, { foreignKey: "productid", as: "product" });
 
 Cart.belongsTo(User, { foreignKey: "userid" });
 User.hasMany(Cart);

@@ -17,7 +17,6 @@ const sequelize_1 = require("sequelize");
 const mysql_conn_1 = __importDefault(require("../utils/mysql_conn"));
 const user_1 = require("./user");
 const product_1 = require("./product");
-const order_status_1 = require("./order_status");
 class Order extends sequelize_1.Model {
     static getOrderById(id) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -26,10 +25,7 @@ class Order extends sequelize_1.Model {
     }
     static getOrdersByUserId(userid) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.findAll({
-                where: { userid: userid },
-                include: [{ model: product_1.Product, as: "product" }],
-            });
+            return yield this.findAll({ where: { userid: userid }, include: [{ model: product_1.Product, as: "product" }] });
         });
     }
 }
@@ -67,18 +63,13 @@ Order.init({
         defaultValue: 0,
     },
     status: {
-        type: sequelize_1.DataTypes.INTEGER,
+        type: sequelize_1.DataTypes.STRING,
         allowNull: false,
-        references: {
-            model: order_status_1.OrderStatus,
-            key: "id",
-        },
-        defaultValue: 1,
+        defaultValue: "pending",
     },
 }, { sequelize: mysql_conn_1.default, tableName: "orders" });
 Order.belongsTo(product_1.Product, { foreignKey: "productid", as: "product" });
 Order.belongsTo(user_1.User, { foreignKey: "userid" });
-Order.belongsTo(order_status_1.OrderStatus, { foreignKey: "status", targetKey: "id" });
 user_1.User.hasMany(Order);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     try {

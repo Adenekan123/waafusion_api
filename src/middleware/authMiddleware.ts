@@ -18,6 +18,7 @@ export const authenticateToken = async (
   if (await TokenBlacklist.tokenBlacklisted(token))
     return res.status(401).json({ error: "Unauthorized, You are logged out" });
 
+  
   jwt.verify(token, SECRET_KEY, (err, user) => {
     if (err) {
       return res.status(403).json({ error: "Invalid token" + err });

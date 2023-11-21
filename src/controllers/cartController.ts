@@ -5,6 +5,21 @@ import { AuthRequest } from "../types";
 import { User } from "../models/user";
 
 export class CartController {
+  static async getCarts(req: AuthRequest, res: Response) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const { id: userid } = req.user as User;
+
+    try {
+      const carts = await Cart.getCarts(userid as unknown as string);
+      res.status(201).json(carts);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
   static async createCart(req: AuthRequest, res: Response) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -20,7 +35,7 @@ export class CartController {
           quantity: quantity ? quantity : cartExist.quantity + 1,
         });
         const carts = await Cart.getCarts(userid as unknown as string);
-        res.status(201).json({ message: "Item added", carts });
+        res.status(201).json({ message: "Item updated", carts });
       } else {
         await Cart.create({
           quantity: quantity ? quantity : 1,
@@ -45,21 +60,16 @@ export class CartController {
     try {
       const { cartid } = req.query;
       const { id: userid } = req.user as User;
-      const cartExist = await Cart.getCartById(
-        cartid as string
-      );
+      const cartExist = await Cart.getCartById(cartid as string);
       if (!cartExist)
         return res.status(404).json({ error: "cart item can't be identified" });
 
       //delete image and delete record in the database
-        await Cart.destroy({
-          where: { id: cartExist.id },
-        });
-        const carts = await Cart.getCarts(userid as unknown as string);
-        res
-          .status(201)
-          .json({ message: "Cart deleted successfully", carts });
-      
+      await Cart.destroy({
+        where: { id: cartExist.id },
+      });
+      const carts = await Cart.getCarts(userid as unknown as string);
+      res.status(201).json({ message: "Cart deleted successfully", carts });
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: "Server Error" });

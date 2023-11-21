@@ -13,6 +13,23 @@ exports.CartController = void 0;
 const express_validator_1 = require("express-validator");
 const cart_1 = require("../models/cart");
 class CartController {
+    static getCarts(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const errors = (0, express_validator_1.validationResult)(req);
+            if (!errors.isEmpty()) {
+                return res.status(400).json({ errors: errors.array() });
+            }
+            const { id: userid } = req.user;
+            try {
+                const carts = yield cart_1.Cart.getCarts(userid);
+                res.status(201).json(carts);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
     static createCart(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const errors = (0, express_validator_1.validationResult)(req);
@@ -28,7 +45,7 @@ class CartController {
                         quantity: quantity ? quantity : cartExist.quantity + 1,
                     });
                     const carts = yield cart_1.Cart.getCarts(userid);
-                    res.status(201).json({ message: "Item added", carts });
+                    res.status(201).json({ message: "Item updated", carts });
                 }
                 else {
                     yield cart_1.Cart.create({
@@ -63,9 +80,7 @@ class CartController {
                     where: { id: cartExist.id },
                 });
                 const carts = yield cart_1.Cart.getCarts(userid);
-                res
-                    .status(201)
-                    .json({ message: "Cart deleted successfully", carts });
+                res.status(201).json({ message: "Cart deleted successfully", carts });
             }
             catch (err) {
                 console.log(err);

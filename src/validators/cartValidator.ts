@@ -2,7 +2,7 @@ import { body, check } from "express-validator";
 
 
 export const createCartValidator = [
-  body("productid").isString().notEmpty().withMessage("can't identify product"),
+  body("productid").isNumeric().notEmpty().withMessage("can't identify product"),
 ];
 export const createVisitorCartValidator = [
   body("productid").isString().notEmpty().withMessage("can't identify product"),

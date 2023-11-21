@@ -76,7 +76,7 @@ class UserController {
                 if (!isPasswordValid)
                     return res.status(401).json({ error: "Invalid credentials" });
                 //Generate access token
-                const accesToken = jsonwebtoken_1.default.sign({ id: user.id, role: user.role }, process.env.SECRET_KEY || "", { expiresIn: "15M" });
+                const accesToken = jsonwebtoken_1.default.sign({ id: user.id, role: user.role }, process.env.SECRET_KEY || "", { expiresIn: "2days" });
                 const refreshToken = jsonwebtoken_1.default.sign({ id: user.id }, process.env.SECRET_KEY || "", { expiresIn: "7d" });
                 return res.status(200).json({ accesToken, refreshToken });
             }

@@ -1,12 +1,15 @@
 import express from "express";
 import {
-  createPartnerOrderValidator,
+  createVisitorOrderValidator,
   deletOrderValidator,
 } from "../../validators/orderValidator";
 import { OrderController } from "../../controllers/orderController";
 
 export const router = express.Router();
 
-router.get("/", OrderController.getAllOrders);
-router.post("/", createPartnerOrderValidator, OrderController.createPartnerOrder);
+router.post(
+  "/",
+  createVisitorOrderValidator,
+  OrderController.createVisitorOrder
+);
 router.delete("/", deletOrderValidator, OrderController.deleteOrder);

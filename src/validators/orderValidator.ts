@@ -1,10 +1,18 @@
 import { body, check } from "express-validator";
 
+export const createPartnerOrderValidator = [
+  body("orderitems").isArray().notEmpty().withMessage("order items are required"),
+];
 
-export const createOrderValidator = [
-  body("productid").isString().notEmpty().withMessage("can't identify product"),
-  body("total").isString().notEmpty().withMessage("total is required"),
+export const createVisitorOrderValidator = [
+  body("orderitems").isArray().notEmpty().withMessage("order items are required"),
+  body("user").notEmpty().withMessage("user is required")
+    
+    
 ];
 export const deletOrderValidator = [
-  check("orderid").isString().notEmpty().withMessage("can't identify order item"),
+  check("orderid")
+    .isString()
+    .notEmpty()
+    .withMessage("can't identify order item"),
 ];

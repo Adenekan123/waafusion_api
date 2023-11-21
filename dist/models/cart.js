@@ -25,15 +25,24 @@ class Cart extends sequelize_1.Model {
     }
     static getCarts(id) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield this.findAll({ where: { userid: id }, include: [product_1.Product] });
+            return yield this.findAll({
+                where: { userid: id },
+                include: [{ model: product_1.Product, as: "product" }],
+            });
         });
     }
     static getCart(productid, userid) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log({ productid, userid });
             return yield this.findOne({
                 where: { userid, productid },
                 include: [product_1.Product],
+            });
+        });
+    }
+    static emptyCart(userid) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.destroy({
+                where: { userid },
             });
         });
     }
@@ -74,7 +83,7 @@ Cart.init({
         defaultValue: 0,
     },
 }, { sequelize: mysql_conn_1.default, tableName: "cart" });
-Cart.belongsTo(product_1.Product, { foreignKey: "productid" });
+Cart.belongsTo(product_1.Product, { foreignKey: "productid", as: "product" });
 Cart.belongsTo(user_1.User, { foreignKey: "userid" });
 user_1.User.hasMany(Cart);
 (() => __awaiter(void 0, void 0, void 0, function* () {
