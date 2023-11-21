@@ -83,11 +83,10 @@ export class OrderController {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     const { id: userid } = req.user as User;
     try {
       const orders = await Order.getOrdersByUserId(userid as unknown as string);
-      res.status(200).json({orders});
+      res.status(200).json(orders);
     } catch (err) {
       console.log(err);
       res.status(500).json({ error: "Server Error" });

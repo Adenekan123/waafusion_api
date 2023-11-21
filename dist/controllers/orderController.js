@@ -93,7 +93,7 @@ class OrderController {
             const { id: userid } = req.user;
             try {
                 const orders = yield order_1.Order.getOrdersByUserId(userid);
-                res.status(200).json({ orders });
+                res.status(200).json(orders);
             }
             catch (err) {
                 console.log(err);
