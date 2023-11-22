@@ -31,6 +31,12 @@ export class Order extends Model<
       include: [{ model: Product, as: "product" }],
     });
   }
+  static async getOrdersByStatus(userid: string,status:number) {
+    return await this.findAll({
+      where: { userid: userid,status },
+      include: [{ model: Product, as: "product" }],
+    });
+  }
 }
 
 Order.init(

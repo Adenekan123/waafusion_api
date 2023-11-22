@@ -32,6 +32,14 @@ class Order extends sequelize_1.Model {
             });
         });
     }
+    static getOrdersByStatus(userid, status) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield this.findAll({
+                where: { userid: userid, status },
+                include: [{ model: product_1.Product, as: "product" }],
+            });
+        });
+    }
 }
 exports.Order = Order;
 Order.init({

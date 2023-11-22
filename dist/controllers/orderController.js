@@ -101,5 +101,31 @@ class OrderController {
             }
         });
     }
+    static getPendingOrders(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id: userid } = req.user;
+            try {
+                const orders = yield order_1.Order.getOrdersByStatus(userid, 1);
+                res.status(200).json(orders);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static getSuccessfullOrders(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { id: userid } = req.user;
+            try {
+                const orders = yield order_1.Order.getOrdersByStatus(userid, 2);
+                res.status(200).json(orders);
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
 }
 exports.OrderController = OrderController;

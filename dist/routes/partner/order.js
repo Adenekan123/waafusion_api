@@ -9,5 +9,7 @@ const orderValidator_1 = require("../../validators/orderValidator");
 const orderController_1 = require("../../controllers/orderController");
 exports.router = express_1.default.Router();
 exports.router.get("/", orderController_1.OrderController.getAllOrders);
+exports.router.get("/successfull", orderController_1.OrderController.getSuccessfullOrders);
+exports.router.get("/pending", orderController_1.OrderController.getPendingOrders);
 exports.router.post("/", orderValidator_1.createPartnerOrderValidator, orderController_1.OrderController.createPartnerOrder);
 exports.router.delete("/", orderValidator_1.deletOrderValidator, orderController_1.OrderController.deleteOrder);

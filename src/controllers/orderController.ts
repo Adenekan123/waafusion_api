@@ -92,4 +92,24 @@ export class OrderController {
       res.status(500).json({ error: "Server Error" });
     }
   }
+  static async getPendingOrders(req: AuthRequest, res: Response) {
+    const { id: userid } = req.user as User;
+    try {
+      const orders = await Order.getOrdersByStatus(userid as unknown as string,1);
+      res.status(200).json(orders);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
+  static async getSuccessfullOrders(req: AuthRequest, res: Response) {
+    const { id: userid } = req.user as User;
+    try {
+      const orders = await Order.getOrdersByStatus(userid as unknown as string,2)
+      res.status(200).json(orders);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
 }
