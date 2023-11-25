@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfileController = void 0;
 const express_validator_1 = require("express-validator");
+const user_1 = require("../models/user");
 const profile_1 = require("../models/profile");
 const multer_upload_1 = require("../utils/multer_upload");
 class ProfileController {
@@ -67,6 +68,46 @@ class ProfileController {
                 res
                     .status(201)
                     .json({ message: "Product updated successfully", profile });
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static updateUSer(req, res) {
+        var _a, _b, _c, _d, _e, _f, _g;
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userExist = yield user_1.User.getUser((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
+                if (!userExist)
+                    return res.status(404).json({ error: "Profile can't be identified" });
+                if ((_b = req.body) === null || _b === void 0 ? void 0 : _b.firstname)
+                    userExist["firstname"] = (_c = req.body) === null || _c === void 0 ? void 0 : _c.firstname;
+                if ((_d = req.body) === null || _d === void 0 ? void 0 : _d.firstname)
+                    userExist["lastname"] = (_e = req.body) === null || _e === void 0 ? void 0 : _e.lastname;
+                if ((_f = req.body) === null || _f === void 0 ? void 0 : _f.firstname)
+                    userExist["phone"] = (_g = req.body) === null || _g === void 0 ? void 0 : _g.phone;
+                const profile = yield userExist.save();
+                res
+                    .status(201)
+                    .json({ message: "Profile updated successfully", profile });
+            }
+            catch (err) {
+                console.log(err);
+                res.status(500).json({ error: "Server Error" });
+            }
+        });
+    }
+    static getUser(req, res) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(req.user);
+            try {
+                const userExist = yield user_1.User.getUser((_a = req.user) === null || _a === void 0 ? void 0 : _a.id);
+                if (!userExist)
+                    return res.status(404).json({ error: "Profile can't be identified" });
+                res.status(201).json(userExist);
             }
             catch (err) {
                 console.log(err);

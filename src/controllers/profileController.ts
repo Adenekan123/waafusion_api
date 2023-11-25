@@ -67,4 +67,39 @@ export class ProfileController {
       res.status(500).json({ error: "Server Error" });
     }
   }
+  static async updateUSer(req: AuthRequest, res: Response) {
+    try {
+      const userExist = await User.getUser(
+        (req.user as User)?.id as unknown as string
+      );
+      if (!userExist)
+        return res.status(404).json({ error: "Profile can't be identified" });
+
+      if (req.body?.firstname) userExist["firstname"] = req.body?.firstname;
+      if (req.body?.firstname) userExist["lastname"] = req.body?.lastname;
+      if (req.body?.firstname) userExist["phone"] = req.body?.phone;
+
+      const profile = await userExist.save();
+      res
+        .status(201)
+        .json({ message: "Profile updated successfully", profile });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
+  static async getUser(req: AuthRequest, res: Response) {
+    console.log(req.user)
+    try {
+      const userExist = await User.getUser(
+        (req.user as User)?.id as unknown as string
+      );
+      if (!userExist)
+        return res.status(404).json({ error: "Profile can't be identified" });
+      res.status(201).json(userExist);
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "Server Error" });
+    }
+  }
 }

@@ -18,7 +18,12 @@ const mysql_conn_1 = __importDefault(require("../utils/mysql_conn"));
 class User extends sequelize_1.Model {
     static getUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            return this.findOne({ where: { email } });
+            return this.findOne({ where: { email }, attributes: { exclude: ['updatedAt'] } });
+        });
+    }
+    static getUser(id) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return this.findOne({ where: { id }, attributes: { exclude: ['password', 'role', 'updatedAt'] } });
         });
     }
 }

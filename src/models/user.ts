@@ -22,7 +22,10 @@ export class User extends Model<
   declare role: CreationOptional<string>;
 
   static async getUserByEmail(email: string) {
-    return this.findOne({ where: { email } });
+    return this.findOne({ where: { email },attributes:{exclude: ['updatedAt']} });
+  }
+  static async getUser(id: string) {
+    return this.findOne({ where: { id },attributes:{exclude: ['password','role','updatedAt']} });
   }
 }
 
